@@ -1,10 +1,21 @@
-import {mutation} from "./_generated/server"
+import {mutation, query} from "./_generated/server"
 
-export const saveSketch = mutation(({db}, {prompt}: {prompt: string}) => {
-    console.log(prompt);
-    // TODO: do some stuff 
-    
+export const saveSketch = mutation(
+    async ({db}, {prompt}: {prompt: string}) => {
+    await db.insert("sketches", {
+        prompt,
+        //createdAt: Date.now(),
+    });
+
     return{
         message: "success",
     };
 });
+
+
+export const getSketches = query(
+    async ({db}) => {
+        const sketches = await db.query("sketches").collect();
+        return sketches;
+    }
+);

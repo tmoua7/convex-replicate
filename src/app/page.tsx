@@ -4,7 +4,7 @@ import { useMutation } from "convex/react";
 
 export default function Home() {
   
-  const saveSketchMutation = useMutation(saveSketch);
+  const saveSketchMutation = useMutation("sketches:saveSketch");
 
   const {
     register,
@@ -17,7 +17,8 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <form onSubmit={handleSubmit(async (formData) => {
+      <form 
+      onSubmit={handleSubmit(async (formData) => {
         const results  = await saveSketchMutation(formData); 
         console.log(results);
       })}>

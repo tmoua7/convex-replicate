@@ -5,6 +5,6 @@ export const saveSketch = mutation(({db}, {prompt}: {prompt: string}) => {
     // TODO: do some stuff 
     
     return{
-        message: 'success',
+        message: "success",
     };
 });

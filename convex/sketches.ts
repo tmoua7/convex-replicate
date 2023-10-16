@@ -1,20 +1,43 @@
-import {mutation, query} from "./_generated/server"
+import { internalMutation, mutation, query} from "./_generated/server"
+import {Id} from "./_generated/dataModel"
+import {internal} from "./_generated/api";
+import { v } from "convex/values";
 
-export const saveSketch = mutation(
-    async ({db}, {prompt}: {prompt: string}) => {
-    await db.insert("sketches", {
+export const saveSketch = mutation({
+    args: {
+        prompt: v.string(),
+        image: v.string(),
+    },
+    
+    handler: async ({db, scheduler}, {prompt, image}) => {
+        const sketch = await db.insert("sketches", {prompt});
+    
+    await scheduler.runAfter(0, internal.generate.generate, {
+        sketchId: sketch,
         prompt,
-        //createdAt: Date.now(),
+        image,
     });
 
-    return{
-        message: "success",
-    };
+    return sketch;
+}
 });
 
+export const getSketch = query(({db}, {sketchId}:{sketchId: Id<"sketches">}) => {
+    return db.get(sketchId);
+});
 
-export const getSketches = query(
-    async ({db}) => {
+export const updateSketchResult = internalMutation(
+    async (
+        {db}, 
+        {sketchId, result}: {sketchId: Id<"sketches">; result: string}
+    ) => {
+        await db.patch(sketchId, {
+            result,
+        });
+    }
+);
+
+export const getSketches = query(async ({db}) => {
         const sketches = await db.query("sketches").collect();
         return sketches;
     }
